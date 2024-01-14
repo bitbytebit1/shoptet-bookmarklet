@@ -1,0 +1,1 @@
+javascript: const script = document.createElement('script'); script.src ='https://cdn.jsdelivr.net/gh/bitbytebit1/shoptet-bookmarklet@latest/script.min.js';document.body.appendChild(script);
