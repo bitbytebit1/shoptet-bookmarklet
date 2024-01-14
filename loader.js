@@ -1,1 +1,1 @@
-javascript: const script = document.createElement('script'); script.src ='https://cdn.jsdelivr.net/gh/bitbytebit1/shoptet-bookmarklet@latest/script.min.js';document.body.appendChild(script);
+javascript:(function()%7Bconst%20script%20%3D%20document.createElement('script')%3B%20script.src%20%3D'https%3A%2F%2Fcdn.jsdelivr.net%2Fgh%2Fbitbytebit1%2Fshoptet-bookmarklet%40latest%2Fscript.js'%3Bdocument.body.appendChild(script)%7D)()
