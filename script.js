@@ -145,6 +145,7 @@ function addSetAll() {
         const value = qs('[data-byte-set-all-input]').value
         qsa('[data-byte-input-proxy]').forEach(input => {
             input.value = value
+            input.dataset.byteInputDirty = true
             // Find sibling input and update value
             input.parentNode.querySelector('[data-testid="cartAmount"]').value = value
         })
