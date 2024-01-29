@@ -114,12 +114,14 @@ function updateTotal() {
 function addSetAll() {
     const div = document.createElement('div')
     div.style.margin = '10px'
+    
 
     div.id = 'setAll'
 
     const span = document.createElement('span')
     span.innerText = 'Set all items to: '
     div.appendChild(span)
+    
 
     const input = document.createElement('input')
     input.type = 'number'
@@ -137,8 +139,29 @@ function addSetAll() {
 
     div.appendChild(button)
 
+    const span2 = document.createElement('span')
+    span2.style.right = '0'
+    span2.style.position = 'absolute'
+
+    const updateAll = document.createElement('button')
+    updateAll.innerText = 'Update all'
+    updateAll.dataset.byteUpdateCart = true
+
+    span2.appendChild(updateAll)
+
+
+    const updateAllFast = document.createElement('button')
+    updateAllFast.innerText = 'Update all fast'
+    updateAllFast.style.marginLeft = '10px'
+    updateAllFast.dataset.byteUpdateCartFast = true
+
+    span2.appendChild(updateAllFast)
+
+    div.appendChild(span2)
 
     pepisShop.elements.cartTable.insertAdjacentHTML('beforebegin', div.outerHTML)
+
+
 
 
     qs('[data-byte-set-all-button]').addEventListener('click', (e) => {
@@ -157,74 +180,93 @@ function addSetAll() {
 
 // Find an element with ".delivery-time" and inserts a div containing a button 
 function addUpdateButton() {
-    pepisShop.elements.deliveryTime.insertAdjacentHTML('beforebegin', '<div id="updateAllButton" data-byte-update-cart style="margin-bottom: 10px;"><button>Update All</button></div>')
-    qs('[data-byte-update-cart]').addEventListener('click', updateCartAll)
+    pepisShop.elements.deliveryTime.insertAdjacentHTML('beforebegin', '<div id="updateAllButton" style="margin-bottom: 10px;"><button  data-byte-update-cart>Update All</button></div>')
+    document.addEventListener('click', (event) => {
+        if (event.target.closest('[data-byte-update-cart]')) {
+            updateCartAll()
+        }
+
+        if (event.target.closest('[data-byte-update-cart-fast]')) {
+            updateCartAll(true)
+        }
+    })
 }
 
-async function updateCartAll() {
-
+async function updateCartAll(runInParallel = false) {
     const log = {
         success: [],
         error: []
-    }
+    };
 
-    qs('[data-byte-update-cart]').querySelector('button').innerText = 'Updating...'
-    qs('[data-byte-update-cart]').querySelector('button').disabled = true
+    qs('[data-byte-update-cart]').innerText = 'Updating...';
+    qs('[data-byte-update-cart]').disabled = true;
 
     // Get all proxy inputs
-    const inputs = qsa('[data-byte-input-dirty]')
+    const inputs = qsa('[data-byte-input-dirty]');
 
-    // Iterate over each input
+    const updateOperations = [];
+
     for (const input of inputs) {
+        delete input.dataset.byteInputDirty;
 
-        delete input.dataset.byteInputDirty
+        const updateOperation = async () => {
+            const parentTableRow = input.closest('tr');
+            const parentForm = input.closest('form');
 
-        const parentTableRow = input.closest('tr')
-        const parentForm = input.closest('form')
+            const itemName = parentTableRow.querySelector('[data-testid="cartProductName"]').innerText;
+            const itemId = parentForm.querySelector('[name="itemId"]').value;
+            const priceId = parentForm.querySelector('[name="priceId"]').value;
+            const amount = input.value;
 
-        const itemName = parentTableRow.querySelector('[data-testid="cartProductName"]').innerText
-        const itemId = parentForm.querySelector('[name="itemId"]').value
-        const priceId = parentForm.querySelector('[name="priceId"]').value
-        const amount = input.value
+            const response = await updateCartItem(itemId, priceId, amount);
 
-        const response = await updateCartItem(itemId, priceId, amount)
-
-        // If we successfully updated the cart set the border to green
-        if (response.code === 200 && response.message.match(pepisShop.addToCart.messages.success)) {
-            log.success.push({ itemName, itemId, priceId, amount })
-            parentTableRow.style.borderLeft = '3px solid green'
-            parentTableRow.style.borderRight = '3px solid green'
-            console.log({ itemName, itemId, priceId, amount })
-        } else {
-            parentTableRow.style.borderLeft = '3px solid red'
-            parentTableRow.style.borderRight = '3px solid red'
-
-            // We got an error, check if it's a not enough stock error
-            if (response.message.match(pepisShop.addToCart.messages.notEnoughStock) || response.message.match(pepisShop.addToCart.messages.notEnoughStock2)) {
-                // Extract the limit from the error message by removing everything except numbers
-                const maxItems = response.message.replace(/\D/g, '')
-                // Update the input value to the limit
-                input.value = maxItems
-
-                // Try to update the cart again with the new value
-                const response2 = await updateCartItem(itemId, priceId, maxItems)
-                console.log({ itemName, itemId, priceId, amount, error: { response, response2 } })
-                log.error.push({ itemName, itemId, priceId, amount, error: { response, response2 } })
+            // If we successfully updated the cart set the border to green
+            if (response.code === 200 && response.message.match(pepisShop.addToCart.messages.success)) {
+                log.success.push({ itemName, itemId, priceId, amount })
+                parentTableRow.style.borderLeft = '3px solid green'
+                parentTableRow.style.borderRight = '3px solid green'
+                console.log({ itemName, itemId, priceId, amount })
             } else {
-                log.error.push({ itemName, itemId, priceId, amount, error: response })
-                console.log({ itemName, itemId, priceId, amount, error: response })
-            }
-        }
+                parentTableRow.style.borderLeft = '3px solid red'
+                parentTableRow.style.borderRight = '3px solid red'
 
+                // We got an error, check if it's a not enough stock error
+                if (response.message.match(pepisShop.addToCart.messages.notEnoughStock) || response.message.match(pepisShop.addToCart.messages.notEnoughStock2)) {
+                    // Extract the limit from the error message by removing everything except numbers
+                    const maxItems = response.message.replace(/\D/g, '')
+                    // Update the input value to the limit
+                    input.value = maxItems
+
+                    // Try to update the cart again with the new value
+                    const response2 = await updateCartItem(itemId, priceId, maxItems)
+                    console.log({ itemName, itemId, priceId, amount, error: { response, response2 } })
+                    log.error.push({ itemName, itemId, priceId, amount, error: { response, response2 } })
+                } else {
+                    log.error.push({ itemName, itemId, priceId, amount, error: response })
+                    console.log({ itemName, itemId, priceId, amount, error: response })
+                }
+            }
+        };
+
+        if (runInParallel) {
+            updateOperations.push(updateOperation());
+        } else {
+            await updateOperation();
+        }
     }
 
-    console.log({ log })
+    if (runInParallel) {
+        await Promise.all(updateOperations);
+    }
 
-    playBase64String()
+    console.log({ log });
 
-    qs('[data-byte-update-cart]').querySelector('button').innerText = 'Update cart'
-    qs('[data-byte-update-cart]').querySelector('button').disabled = false
+    playBase64String();
+
+    qs('[data-byte-update-cart]').innerText = 'Update cart';
+    qs('[data-byte-update-cart]').disabled = false;
 }
+
 
 function updateCartItem(itemId, priceId, amount) {
     const formData = Object.entries({ itemId, priceId, amount }).map(([key, value]) => `${key}=${value}`).join('&')
