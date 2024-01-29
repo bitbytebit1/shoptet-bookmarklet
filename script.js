@@ -31,10 +31,42 @@ function init() {
         return
     }
 
-    addProxyInputs()
-    addUpdateButton()
-    addSetAll()
-    fixTabIndexes()
+    if (qs('.ordering-process')) {
+        addProxyInputs()
+        addUpdateButton()
+        addSetAll()
+        fixTabIndexes()
+    } else {
+        initLoadAllPages()
+        initShoppingPopupWatcher()
+    }
+
+}
+
+function initShoppingPopupWatcher() {
+    if (!document.querySelector('.category-content-wrapper')) {
+        alert('Cannot init pop up killer on this page')
+    }
+
+    // Poll for existence of buttonCardSelector
+    setInterval(() => {
+        const button = document.querySelector('[data-testid="buttonPopupCart"]')
+        if (button) {
+            const parent = button.closest('#colorbox')
+            const closeModalButton = parent.querySelector('#cboxClose')
+            closeModalButton.click()
+        }
+    }, 50);
+}
+
+async function initLoadAllPages() {
+    const loadAllButtonSelector = '[data-testid="buttonMoreItems"]'
+    const lastPageSelector = '[data-testid="linkLastPage"]'
+    const totalNumberOfPages = document.querySelector(lastPageSelector)?.textContent - 1 || 0
+    for (let i = 0; i < totalNumberOfPages; i++) {
+        await sleep(650)
+        document.querySelector(loadAllButtonSelector).click()
+    }
 }
 
 function fixTabIndexes() {
@@ -44,7 +76,6 @@ function fixTabIndexes() {
         cart.querySelector('[data-testid="buttonDeleteItem"]').tabIndex = -1
     })
 }
-
 
 function addProxyInputs() {
     // Loop through all the inputs and create a custom input next to the existing one
@@ -114,14 +145,14 @@ function updateTotal() {
 function addSetAll() {
     const div = document.createElement('div')
     div.style.margin = '10px'
-    
+
 
     div.id = 'setAll'
 
     const span = document.createElement('span')
     span.innerText = 'Set all items to: '
     div.appendChild(span)
-    
+
 
     const input = document.createElement('input')
     input.type = 'number'
