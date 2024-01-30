@@ -33,6 +33,8 @@ function init() {
 
     if (qs('.ordering-process')) {
         addProxyInputs()
+        addCartItemButtons()
+        addCartItemButtonsMaths()
         addUpdateButton()
         addSetAll()
         fixTabIndexes()
@@ -74,6 +76,9 @@ function fixTabIndexes() {
         cart.querySelector('[data-testid="cartProductName"] .main-link').tabIndex = -1
         cart.querySelector('.cart-p-image a').tabIndex = -1
         cart.querySelector('[data-testid="buttonDeleteItem"]').tabIndex = -1
+        cart.querySelector('[data-byte-set-quantity]').tabIndex = -1
+        cart.querySelector('[data-byte-divide-by]').tabIndex = -1
+        cart.querySelector('[data-byte-multiply-by]').tabIndex = -1
     })
 }
 
@@ -114,6 +119,126 @@ function addProxyInputs() {
         })
     })
 }
+
+// Add button to set quanity to 12, 24, 48
+function addCartItemButtons() {
+    pepisShop.elements.carts.forEach(cart => {
+        
+        const div = document.createElement('div')
+        div.style.margin = '10px'
+        div.style.display = "flex";
+
+        [12, 24, 30, 48, 120].forEach(value => {
+            const button = document.createElement('button')
+            button.innerText = value
+            button.style.marginRight = '10px'
+            button.dataset.byteSetQuantity = value
+            div.appendChild(button)
+        })
+        
+
+        // const button12 = document.createElement('button')
+        // button12.innerText = '12'
+        // button12.style.marginRight = '10px'
+        // button12.dataset.byteSetQuantity = 12
+        // div.appendChild(button12)
+        
+        // const button24 = document.createElement('button')
+        // button24.innerText = '24'
+        // button24.style.marginRight = '10px'
+        // button24.dataset.byteSetQuantity = 24
+        // div.appendChild(button24)
+
+        // const button30 = document.createElement('button')
+        // button12.innerText = '30'
+        // button12.style.marginRight = '10px'
+        // button12.dataset.byteSetQuantity = 30
+        // div.appendChild(button30)
+
+        // const button48 = document.createElement('button')
+        // button48.innerText = '48'
+        // button48.style.marginRight = '10px'
+        // button48.dataset.byteSetQuantity = 48
+        // div.appendChild(button48)
+
+        // const button120 = document.createElement('button')
+        // button48.innerText = '120'
+        // button48.style.marginRight = '10px'
+        // button48.dataset.byteSetQuantity = 120
+        // div.appendChild(button120)
+
+        cart.querySelector('[data-testid="cartProductName"]').insertAdjacentHTML('beforeend', div.outerHTML)
+        
+    })
+
+    document.addEventListener('click', (event) => {
+        if (event.target.closest('[data-byte-set-quantity]')) {
+            const parent = event.target.closest('[data-micro="cartItem"]')
+            const inputProxy = parent.querySelector('[data-byte-input-proxy]')
+
+            // Update old input
+            const inputOld = parent.querySelector('[data-testid="cartAmount"]')
+            const quantity = event.target.dataset.byteSetQuantity
+            inputProxy.value = quantity
+            inputOld.value = quantity
+            inputProxy.dataset.byteInputDirty = true
+            updateRowPrice([parent])
+        }
+    })
+
+}
+
+// Add buttons to divide by 2 or times by 2
+function addCartItemButtonsMaths () {
+    pepisShop.elements.carts.forEach(cart => {
+        const div = document.createElement('div')
+        div.style.margin = '10px'
+        div.style.display = 'flex'
+
+        const buttonDivide = document.createElement('button')
+        buttonDivide.innerText = '÷ 2'
+        buttonDivide.style.marginRight = '10px'
+        buttonDivide.dataset.byteDivideBy = 2
+        div.appendChild(buttonDivide)
+
+        const buttonMultiply = document.createElement('button')
+        buttonMultiply.innerText = '× 2'
+        buttonMultiply.style.marginRight = '10px'
+        buttonMultiply.dataset.byteMultiplyBy = 2
+        div.appendChild(buttonMultiply)
+
+        cart.querySelector('[data-testid="cartProductName"]').insertAdjacentHTML('beforeend', div.outerHTML)
+    })
+
+    document.addEventListener('click', (event) => {
+        if (event.target.closest('[data-byte-divide-by]')) {
+            const parent = event.target.closest('[data-micro="cartItem"]')
+            const inputProxy = parent.querySelector('[data-byte-input-proxy]')
+
+            // Update old input
+            const inputOld = parent.querySelector('[data-testid="cartAmount"]')
+            const quantity = inputProxy.value / event.target.dataset.byteDivideBy
+            inputProxy.value = quantity
+            inputOld.value = quantity
+            inputProxy.dataset.byteInputDirty = true
+            updateRowPrice([parent])
+        }
+
+        if (event.target.closest('[data-byte-multiply-by]')) {
+            const parent = event.target.closest('[data-micro="cartItem"]')
+            const inputProxy = parent.querySelector('[data-byte-input-proxy]')
+
+            // Update old input
+            const inputOld = parent.querySelector('[data-testid="cartAmount"]')
+            const quantity = inputProxy.value * event.target.dataset.byteMultiplyBy
+            inputProxy.value = quantity
+            inputOld.value = quantity
+            inputProxy.dataset.byteInputDirty = true
+            updateRowPrice([parent])
+        }
+    })
+}
+
 
 function updateRowPrice(carts) {
     carts.forEach(cart => {
@@ -174,11 +299,11 @@ function addSetAll() {
     span2.style.right = '0'
     span2.style.position = 'absolute'
 
-    const updateAll = document.createElement('button')
-    updateAll.innerText = 'Update all'
-    updateAll.dataset.byteUpdateCart = true
+    // const updateAll = document.createElement('button')
+    // updateAll.innerText = 'Update all'
+    // updateAll.dataset.byteUpdateCart = true
 
-    span2.appendChild(updateAll)
+    // span2.appendChild(updateAll)
 
 
     const updateAllFast = document.createElement('button')
@@ -304,6 +429,12 @@ function updateCartItem(itemId, priceId, amount) {
     return post(pepisShop.addToCart.url, pepisShop.addToCart.headers, formData)
 }
 
+function sleep(ms) {
+    return new Promise((resolve) => {
+        setTimeout(resolve, ms)
+    })
+}
+
 function documentReady(callbackFunc) {
     if (!document.addEventListener) {
         document.attachEvent('onreadystatechange', function () {
@@ -337,12 +468,6 @@ function qs(selector, scope = window.document) {
  */
 function qsa(selector, scope = window.document) {
     return [...scope.querySelectorAll(selector)];
-}
-
-function sleep(ms) {
-    return new Promise((resolve) => {
-        setTimeout(resolve, ms)
-    })
 }
 
 function post(url, headers, data) {
