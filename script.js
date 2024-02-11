@@ -59,6 +59,14 @@ function initShoppingPopupWatcher() {
             closeModalButton.click()
         }
     }, 50);
+
+    // Inject style to hide the pop up
+    const style = document.createElement('style')
+    style.innerHTML = `
+    .shoptet-modal-lg {
+        display: none !important;
+    }
+    `
 }
 
 async function initLoadAllPages() {
