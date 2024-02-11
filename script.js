@@ -70,6 +70,11 @@ function initShoppingPopupWatcher() {
 }
 
 async function initLoadAllPages() {
+    const loadAllButton = qs('.search-next-wrap [data-testid="btnShowAllResults"]')
+    if (loadAllButton) {
+        loadAllButton.click()
+    }
+
     const loadAllButtonSelector = '[data-testid="buttonMoreItems"]'
     const lastPageSelector = '[data-testid="linkLastPage"]'
     const totalNumberOfPages = document.querySelector(lastPageSelector)?.textContent - 1 || 0
