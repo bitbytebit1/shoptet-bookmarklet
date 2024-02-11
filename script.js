@@ -128,7 +128,7 @@ function addCartItemButtons() {
         div.style.margin = '10px'
         div.style.display = "flex";
 
-        [12, 24, 30, 48, 120].forEach(value => {
+        [1, 12, 24, 30, 48, 120].forEach(value => {
             const button = document.createElement('button')
             button.innerText = value
             button.style.marginRight = '10px'
