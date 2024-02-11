@@ -153,6 +153,7 @@ function addCartItemButtons() {
             const button = document.createElement('button')
             button.innerText = value
             button.style.marginRight = '10px'
+            button.tabIndex = -1
             button.dataset.byteSetQuantity = value
             div.appendChild(button)
         })
