@@ -66,8 +66,18 @@ async function initLoadAllPages() {
     const lastPageSelector = '[data-testid="linkLastPage"]'
     const totalNumberOfPages = document.querySelector(lastPageSelector)?.textContent - 1 || 0
     for (let i = 0; i < totalNumberOfPages; i++) {
-        await sleep(650)
         document.querySelector(loadAllButtonSelector).click()
+        await waitUntil(() => isNextPage(i + 2))
+    }
+}
+
+function isNextPage(pageNumber) {
+    return qs('[data-testid="numberCurrentPage"]').innerText == pageNumber
+}
+
+async function waitUntil(condition) {
+    while (!condition()) {
+        await sleep(10)
     }
 }
 
