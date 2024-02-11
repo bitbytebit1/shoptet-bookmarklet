@@ -63,6 +63,8 @@ function initShoppingPopupWatcher() {
         display: none !important;
     }
     `
+
+    document.head.appendChild(style)
 }
 
 async function initLoadAllPages() {
