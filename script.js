@@ -157,37 +157,6 @@ function addCartItemButtons() {
             div.appendChild(button)
         })
         
-
-        // const button12 = document.createElement('button')
-        // button12.innerText = '12'
-        // button12.style.marginRight = '10px'
-        // button12.dataset.byteSetQuantity = 12
-        // div.appendChild(button12)
-        
-        // const button24 = document.createElement('button')
-        // button24.innerText = '24'
-        // button24.style.marginRight = '10px'
-        // button24.dataset.byteSetQuantity = 24
-        // div.appendChild(button24)
-
-        // const button30 = document.createElement('button')
-        // button12.innerText = '30'
-        // button12.style.marginRight = '10px'
-        // button12.dataset.byteSetQuantity = 30
-        // div.appendChild(button30)
-
-        // const button48 = document.createElement('button')
-        // button48.innerText = '48'
-        // button48.style.marginRight = '10px'
-        // button48.dataset.byteSetQuantity = 48
-        // div.appendChild(button48)
-
-        // const button120 = document.createElement('button')
-        // button48.innerText = '120'
-        // button48.style.marginRight = '10px'
-        // button48.dataset.byteSetQuantity = 120
-        // div.appendChild(button120)
-
         cart.querySelector('[data-testid="cartProductName"]').insertAdjacentHTML('beforeend', div.outerHTML)
         
     })
