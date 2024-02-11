@@ -363,7 +363,7 @@ function addUpdateButton() {
     pepisShop.elements.deliveryTime.insertAdjacentHTML('beforebegin', '')
     document.addEventListener('click', (event) => {
         if (event.target.closest('[data-byte-update-cart]')) {
-            updateCartAll()
+            updateCartAll(false)
         }
 
         if (event.target.closest('[data-byte-update-cart-fast]')) {
