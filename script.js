@@ -46,10 +46,6 @@ function init() {
 }
 
 function initShoppingPopupWatcher() {
-    if (!document.querySelector('.category-content-wrapper')) {
-        alert('Cannot init pop up killer on this page')
-    }
-
     // Poll for existence of buttonCardSelector
     setInterval(() => {
         const button = document.querySelector('[data-testid="buttonPopupCart"]')
