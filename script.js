@@ -299,11 +299,11 @@ function addSetAll() {
     span2.style.right = '0'
     span2.style.position = 'absolute'
 
-    // const updateAll = document.createElement('button')
-    // updateAll.innerText = 'Update all'
-    // updateAll.dataset.byteUpdateCart = true
+    const updateAll = document.createElement('button')
+    updateAll.innerText = 'Update all slow'
+    updateAll.dataset.byteUpdateCart = true
 
-    // span2.appendChild(updateAll)
+    span2.appendChild(updateAll)
 
 
     const updateAllFast = document.createElement('button')
@@ -336,7 +336,8 @@ function addSetAll() {
 
 // Find an element with ".delivery-time" and inserts a div containing a button 
 function addUpdateButton() {
-    pepisShop.elements.deliveryTime.insertAdjacentHTML('beforebegin', '<div id="updateAllButton" style="margin-bottom: 10px;"><button  data-byte-update-cart>Update All</button></div>')
+    pepisShop.elements.deliveryTime.insertAdjacentHTML('beforebegin', '<div style="display: flex;gap:10px; "><button  data-byte-update-cart>Update all slow</button><button  data-byte-update-cart-fast>Update all fast</button></div>')
+    pepisShop.elements.deliveryTime.insertAdjacentHTML('beforebegin', '')
     document.addEventListener('click', (event) => {
         if (event.target.closest('[data-byte-update-cart]')) {
             updateCartAll()
