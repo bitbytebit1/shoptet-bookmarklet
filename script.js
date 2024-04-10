@@ -42,7 +42,6 @@ function init() {
         initLoadAllPages()
         initShoppingPopupWatcher()
     }
-
 }
 
 function initShoppingPopupWatcher() {
@@ -364,9 +363,10 @@ async function updateCartAll(runInParallel = false) {
             const itemName = parentTableRow.querySelector('[data-testid="cartProductName"]').innerText;
             const itemId = parentForm.querySelector('[name="itemId"]').value;
             const priceId = parentForm.querySelector('[name="priceId"]').value;
+            const csrfToken = parentForm.querySelector('[name="__csrf__"]').value;
             const amount = input.value;
 
-            const response = await updateCartItem(itemId, priceId, amount);
+            const response = await updateCartItem(itemId, priceId, amount, csrfToken);
 
             // If we successfully updated the cart set the border to green
             if (response.code === 200 && response.message.match(pepisShop.addToCart.messages.success)) {
@@ -386,7 +386,7 @@ async function updateCartAll(runInParallel = false) {
                     input.value = maxItems
 
                     // Try to update the cart again with the new value
-                    const response2 = await updateCartItem(itemId, priceId, maxItems)
+                    const response2 = await updateCartItem(itemId, priceId, maxItems, csrfToken);
                     console.log({ itemName, itemId, priceId, amount, error: { response, response2 } })
                     log.error.push({ itemName, itemId, priceId, amount, error: { response, response2 } })
                 } else {
@@ -416,8 +416,8 @@ async function updateCartAll(runInParallel = false) {
 }
 
 
-function updateCartItem(itemId, priceId, amount) {
-    const formData = Object.entries({ itemId, priceId, amount }).map(([key, value]) => `${key}=${value}`).join('&')
+function updateCartItem(itemId, priceId, amount, __csrf__) {
+    const formData = Object.entries({ itemId, priceId, amount, __csrf__ }).map(([key, value]) => `${key}=${value}`).join('&')
     return post(pepisShop.addToCart.url, pepisShop.addToCart.headers, formData)
 }
 
