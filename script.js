@@ -93,7 +93,7 @@ async function waitUntil(condition) {
 
 function fixTabIndexes() {
     pepisShop.elements.carts.forEach(cart => {
-        cart.querySelector('[data-testid="cartProductName"] .main-link').tabIndex = -1
+        cart.querySelector('[data-testid="cellProductName"] .main-link').tabIndex = -1
         cart.querySelector('.cart-p-image a').tabIndex = -1
         cart.querySelector('[data-testid="buttonDeleteItem"]').tabIndex = -1
         cart.querySelector('[data-byte-set-quantity]').tabIndex = -1
@@ -157,7 +157,7 @@ function addCartItemButtons() {
             div.appendChild(button)
         })
         
-        cart.querySelector('[data-testid="cartProductName"]').insertAdjacentHTML('beforeend', div.outerHTML)
+        cart.querySelector('[data-testid="cartProductName"]').insertAdjacentHTML('afterend', div.outerHTML)
         
     })
 
