@@ -105,6 +105,7 @@ function fixTabIndexes() {
 function addProxyInputs() {
     // Loop through all the inputs and create a custom input next to the existing one
     pepisShop.elements.cartItemInput.forEach(input => {
+        console.log('Adding proxy input for', input)
         // Create a new input
         const newInput = document.createElement('input')
         newInput.type = 'number'
@@ -122,8 +123,8 @@ function addProxyInputs() {
         input.style.display = 'none'
 
         // Hide the increase and decrease buttons
-        input.parentNode.querySelector('.increase').style.display = 'none'
-        input.parentNode.querySelector('.decrease').style.display = 'none'
+        input.parentNode.parentNode.querySelector('.increase').style.display = 'none'
+        input.parentNode.parentNode.querySelector('.decrease').style.display = 'none'
 
         // Calculate the new price including the discount and update the price for the item
         newInput.addEventListener('change', async (e) => {
